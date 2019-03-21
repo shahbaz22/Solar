@@ -1,2 +1,0 @@
-# Solar
-Code for RM

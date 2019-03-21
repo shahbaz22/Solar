@@ -5,7 +5,7 @@ from mpl_toolkits.mplot3d import Axes3D
 from matplotlib import cm
 from matplotlib.ticker import LinearLocator, FormatStrFormatter
 from scipy import special
-
+# This is a check for a git upload
 R1=0.5
 R2=1
 a1=np.linspace(0.01,4,600) # Bessel functions only take positive values

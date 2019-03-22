@@ -22,35 +22,37 @@ def Y(v,a,R):
 	BF22=scsp.yv(v,a*R)
 	return (BF22)
 
-Delta=2/(np.pi*abs(a2)*R1) 
+def C(a11,a22):
+	C2=(J(0,a11,R1)*J(1,abs(a22),R1)+J(1,a11,R1)*J(0,abs(a22),R1))*(np.pi*abs(a22)*R1)*(1/2)
+	return(C2)
 
+def B(a11,a22):
+	B2=(-(J(1,a11,R1)*Y(0,abs(a22),R1)+J(0,a11,R1)*Y(1,abs(a22),R1))*(np.pi*abs(a22)*R1)*(1/2))
+	return(B2)
 
-C2=J(0,a1,R1)*J(1,abs(a2),R1)+J(1,a1,R1)*J(0,abs(a2),R1)/Delta 
-B2=-(J(1,a1,R1)*Y(0,abs(a2),R1)+J(0,a1,R1)*Y(1,abs(a2),R1)/Delta)
+#Delta=2/(np.pi*abs(a2)*R1) 
 
-F0a2R1=J(0,abs(a2),R1)+(C2/B2)*Y(0,abs(a2),R1)
-F1a2R1=J(1,abs(a2),R1)+(C2/B2)*Y(1,abs(a2),R1)
-F0a2R2=J(0,abs(a2),R2)+(C2/B2)*Y(0,abs(a2),R2)
-F1a2R2=J(1,abs(a2),R2)+(C2/B2)*Y(1,abs(a2),R2)
-
+def F(v,a,R):
+	F0a2R1=J(v,a,R)+(C(a1,a2)/B(a1,a2))*Y(v,a,R)
+	return (F0a2R1)
 
 K1=(2*np.pi/a1)*((R1**2)*(J(0,a1,R1)**2 + J(1,a1,R1)**2)
 	-2*R1*(1/a1)*J(0,a1,R1)*J(1,a1,R1))
-K2=((2*np.pi*B2**2)/abs(a2))*(((F0a2R2**2) +(F1a2R2**2) -
-	(2*R2/abs(a2))*F0a2R2*F1a2R2))
-K3=((2*np.pi*B2**2)/abs(a2))*((R1**2)*((F0a2R1**2) +(F1a2R1**2)- 
-	(2*R1/abs(a2))*F0a2R1*F1a2R1))
-K4=(4*np.pi*B2/abs(a2))*(F0a2R1-F0a2R2)*R1*J(1,a1,R1)*(1/a1 - 1/a2)
+K2=((2*np.pi*B(a1,a2)**2)/abs(a2))*(((F(0,abs(a2),R2)**2) +(F(1,abs(a2),R2)**2) -
+	(2*R2/abs(a2))*F(0,abs(a2),R2)*F(1,abs(a2),R2)))
+K3=((2*np.pi*B(a1,a2)**2)/abs(a2))*((R1**2)*((F(0,abs(a2),R1)**2) +(F(1,abs(a2),R1)**2)- 
+	(2*R1/abs(a2))*F(0,abs(a2),R1)*F(1,abs(a2),R1)))
+K4=(4*np.pi*B(a1,a2)/abs(a2))*(F(0,abs(a2),R1)-F(0,abs(a2),R2))*R1*J(1,a1,R1)*(1/a1 - 1/a2)
 
 
-norm=((2*np.pi*B2)/abs(a2))*R2*F1a2R2+2*np.pi*R1*J(1,a1,R1)*(1/a1 - 1/a2)
+norm=((2*np.pi*B(a1,a2))/abs(a2))*R2*F(1,abs(a2),R2)+2*np.pi*R1*J(1,a1,R1)*(1/a1 - 1/a2)
 
 K=+K1+K2-K3+K4
 kn=K/(norm**2)
 
 fig=plt.figure()
 ax=fig.gca(projection='3d')
-surf=ax.plot_surface(a1,a2,K3, cmap=cm.coolwarm,
+surf=ax.plot_surface(a1,a2,kn, cmap=cm.coolwarm,
 	linewidth=0,antialiased=False)
 ax.set_xlabel('a1')
 ax.set_ylabel('a2')

@@ -49,7 +49,7 @@ norm=((2*np.pi*B2)/a2)*R2*F1a2R2+2*np.pi*R1*J(1,a1,R1)*(1/a1 - 1/a2)
 K=+K1+K2-K3+K4
 kn=K/(norm**2)
 
-plt.plot(a1,kn,a1,K)
+plt.plot(a1,K,a1,kn)
 plt.ylim(0,5)
 plt.xlabel('a')
 plt.ylabel('K')

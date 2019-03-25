@@ -8,7 +8,7 @@ from scipy import special
 # This is a check for a git upload
 R1=0.5
 R2=1
-a1=np.linspace(0.01,3,600) # Bessel functions only take positive values
+a1=np.linspace(1,2,600) # Bessel functions only take positive values
 a2=np.linspace(-4.01,4,600) #Assures that the arrays have the same number of elements
 a1,a2=np.meshgrid(a1,a2)
 
@@ -45,12 +45,12 @@ K4=(4*np.pi*B2/abs(a2))*(F0a2R1-F0a2R2)*R1*J(1,a1,R1)*(1/a1 - 1/a2)
 
 norm=((2*np.pi*B2)/abs(a2))*R2*F1a2R2+2*np.pi*R1*J(1,a1,R1)*(1/a1 - 1/a2)
 
-K=+K1+K2-K3+K4
+K=+K1-K2+K3-K4
 kn=K/(norm**2)
 
 fig=plt.figure()
 ax=fig.gca(projection='3d')
-surf=ax.plot_surface(a1,a2,K3, cmap=cm.coolwarm,
+surf=ax.plot_surface(a1,a2,kn, cmap=cm.coolwarm,
 	linewidth=0,antialiased=False)
 ax.set_xlabel('a1')
 ax.set_ylabel('a2')
@@ -61,3 +61,4 @@ ax.set_zlim(0, 2.5)
 #plt.ylim(-4,4)
 #plt.xlim(3,0)
 plt.show()
+print(np.min(kn))

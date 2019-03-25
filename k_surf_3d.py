@@ -8,8 +8,8 @@ from scipy import special
 # This is a check for a git upload
 R1=0.5
 R2=1
-a1=np.linspace(1,2,600) # Bessel functions only take positive values
-a2=np.linspace(-4.01,4,600) #Assures that the arrays have the same number of elements
+a1=np.linspace(1,4,600) # Bessel functions only take positive values
+a2=np.linspace(1,4,600) #Assures that the arrays have the same number of elements
 a1,a2=np.meshgrid(a1,a2)
 
 scsp=scipy.special

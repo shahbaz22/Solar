@@ -1,6 +1,5 @@
 'non working program for K surf plot for'
 'a2 values >0,=0,<0, a1 always >0'
-'working porgram for a1,a2>0, for K with surface plot'
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
@@ -52,55 +51,62 @@ def kn(alpha1,alpha2):
         'b2 constant for negative a2'
         b2n=-j(1,a1)*y(0,a2)-j(0,a1)*y(1,a2)
         return b2n
+    'producing constants for different a2 values'
     c2prodp=np.where((alpha1>0) & (alpha2>0),c2p(a1r1,a2r1),0)
     b2prodp=np.where((alpha1>0) & (alpha2>0),b2p(a1r1,a2r1),0)
-    c2prodn=np.where((alpha1>0) & (alpha2<0),c2p(a1r1,a2r1),0)
-    b2prodn=np.where((alpha1>0) & (alpha2<0),b2p(a1r1,a2r1),0)
+    c2prodn=np.where((alpha1>0) & (alpha2<0),c2n(a1r1,a2r1),0)
+    b2prodn=np.where((alpha1>0) & (alpha2<0),b2n(a1r1,a2r1),0)
 
-    c2prod=j(0,a1r1)*j(1,a2r1)-j(1,a1r1)*j(0,a2r1)
-    b2prod=j(1,a1r1)*y(0,a2r1)-j(0,a1r1)*y(1,a2r1)
     ctb1rat=j(1,a1r1)*(1/alpha1-1/alpha2)
+    'if there is an error double check sign of dis and ctb1rat'
     dis=2/(np.pi*a2r1)
 
-    'ratio of terms needd to calculate F, B1 cancels'
-    c2b2rat=c2prodp/b2prodp 
-    def F0(x):
+    'ratio of constants for F, depend on sign of a2'
+    c2b2ratp=np.where((alpha1>0) & (alpha2>0),c2p(a1r1,a2r1)/b2p(a1r1,a2r1),0)
+    c2b2ratn=np.where((alpha1>0) & (alpha2<0),c2n(a1r1,a2r1)/b2n(a1r1,a2r1),0)
+
+    def F0(x,c2b2rat):
     	f=j(0,x)+c2b2rat*y(0,x)
     	return f
-    def F1(x):
+    def F1(x,c2b2rat):
     	f=j(1,x)+c2b2rat*y(1,x)
     	return f
-    'norm=1 to find B1, then using B1 find C2, B2'
-    
-    normt=(2*np.pi*(R2*b2prodp*(F1(a2r2)/(abs(alpha2)*dis))+R1*ctb1rat))   
-    B1=1/normt
-    B2=B1*b2prodp/dis
-    C2=B1*c2prodp/dis
+    'norm for positive a2'
+    def norm(b2prod,c2b2rat):
+        norm0=(2*np.pi*(R2*'b2prod'*(F1(a2r2,c2b2rat)/(abs(alpha2)*dis))+R1*ctb1rat))   
+        return norm0
+    'B1 is the same if a2>0 or a2<0'
+    B1p=np.where((alpha1>0) & (alpha2>0),1/norm(b2prodp,c2b2ratp),0)
+    B2p=B1p*b2prodp/dis
+    C2p=B1p*c2prodp/dis
 
-    def k1(alpha1,r1):
-        'calculates first term K1 in helicity'
-        'Fist term only uses R1,(Rc)'
+    B1n=np.where((alpha1>0) & (alpha2<0),1/norm(b2prodn,c2b2ratn),0)
+    B2n=B1n*b2prodn/dis
+    C2n=B1n*c2prodn/dis   
+
+    def k(B1,B2,c2b2rat,r1,r2):
+        'function calculates K for pos and neg a2 depending on constants'
+        'for pos a2 B1p,B2p and c2b2ratp'
+        'for neg a2 B1n B2n and c2b2ratn'
+        'k1 only uses a1 and r1'
         j0=j(0,alpha1*r1)
         j1=j(1,alpha1*r1)
         k1=(2*np.pi*B1**2)*((r1**2)*(j0**2+j1**2)-2*r1*j0*j1/alpha1)/alpha1
-        return k1
-#Calculates term k2 in helicity
-#Works for postive and negative alpha1r1 - "sgn" is sign of alpha1r1 function k2 
-    def k2(alpha2,r1,r2):
-        'k2 terms where all terms are functions of a2'
-        f1r1=F1(abs(alpha2*r1))
-        f1r2=F1(abs(alpha2*r2))
-        f0r1=F0(abs(alpha2*r1))
-        f0r2=F0(abs(alpha2*r2))
+
+        'k2 only uses a2'
+        f1r1=F1(abs(alpha2*r1),c2b2ratp)
+        f1r2=F1(abs(alpha2*r2),c2b2ratp)
+        f0r1=F0(abs(alpha2*r1),c2b2ratp)
+        f0r2=F0(abs(alpha2*r2),c2b2ratp)
         sgn=alpha2/abs(alpha2)
 
         k2=((r2**2)*(f0r2**2+f1r2**2)-2*r2*f0r2*f1r2/abs(alpha2))-(r1**2)*(f0r1**2+f1r1**2)
         k2=(k2+2*r1*f0r1*f1r1/abs(alpha2))*(2*np.pi*B2**2)/abs(alpha2) #here whole term multipied by constant
         k2=k2+(4*np.pi*B2*B1*r1*ctb1rat*(f0r1-f0r2))/abs(alpha2)
-        k2=sgn*k2 # apart from K1 the other part of Ks siga2r2depends on the sign of a1r1
-        return k2
-
-    helicity=k1(alpha1,R1)+k2(alpha2,R1,R2) #main case needed
+        return k
+    kp=np.where((alpha1>0) &(alpha2>0),k(B1p,B2p,c2b2ratp,R1,R2),0)
+    kn=np.where((alpha1>0) &(alpha2<0),k(B1n,B2n,c2b2ratn,R1,R2),0)
+    helicity=np.add(kp,kn)
     return helicity
 
 fig=plt.figure()

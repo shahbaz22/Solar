@@ -101,7 +101,7 @@ ax.set_ylabel('a2')
 ax.set_zlabel('K')
 #Add color bar
 fig.colorbar(surf,shrink=0.5,aspect=5) 
-ax.set_zlim(-0.5, zlim)
+#ax.set_zlim(-0.5, zlim)
 ax.set_xlim(0, 3.0)
 ax.set_ylim(0, 4.0)
 

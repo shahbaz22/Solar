@@ -1,4 +1,4 @@
-'not working porgram for a1,a2>0, for psi0 with surface plot'
+'working porgram for a1,a2>0, for psi0 with surface plot'
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt

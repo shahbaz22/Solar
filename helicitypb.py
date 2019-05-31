@@ -28,7 +28,7 @@ global B1 B2 C2 C2B2RAT CTHETA RC R
       #continuity constants for vector potential to simplify calculations, K2 term
       CTHETA = 0.5*RC^2*B1
    
-   elif   abs(alpha2) < tol:
+   elif   abs(alpha2) < tol: #a2~0
       #normalise field on axis to give flux = 1
       j1=scsp.jv(1,a1)
       j0=scsp.jv(0,a1)

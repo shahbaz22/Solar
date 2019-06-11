@@ -60,7 +60,7 @@ def kn(alpha1,alpha2):
     c2prodn=np.where((alpha1>0) & (alpha2<0),c2n(a1r1,a2r1),0)
     b2prodn=np.where((alpha1>0) & (alpha2<0),b2n(a1r1,a2r1),0)
 
-    print(b2prodp)
+    #print(b2prodp)
     ctb1rat=j(1,a1r1)*(1/alpha1-1/alpha2)
     'if there is an error double check sign of dis and ctb1rat'
     dis=2/(np.pi*a2r1)
@@ -84,7 +84,7 @@ def kn(alpha1,alpha2):
     B1p=np.where((alpha1>0) & (alpha2>0),1/norm(b2p(a1r1,a2r1),c2b2ratp),0)
     B2p=B1p*b2prodp/dis
     C2p=B1p*c2prodp/dis
-
+    
     B1n=np.where((alpha1>0) & (alpha2<0),1/norm(b2n(a1r1,a2r1),c2b2ratn),0)
     B2n=B1n*b2prodn/dis
     C2n=B1n*c2prodn/dis   
@@ -97,7 +97,7 @@ def kn(alpha1,alpha2):
         j0=j(0,alpha1*r1)
         j1=j(1,alpha1*r1)
         k1=(2*np.pi*B1**2)*((r1**2)*(j0**2+j1**2)-2*r1*j0*j1/alpha1)/alpha1
-
+        print(k1,'k1')        
         'k2 only uses a2'
         f1r1=F1(abs(alpha2*r1),c2b2rat)
         f1r2=F1(abs(alpha2*r2),c2b2rat)
@@ -109,12 +109,13 @@ def kn(alpha1,alpha2):
         k2=(k2+2*r1*f0r1*f1r1/abs(alpha2))*(2*np.pi*B2**2)/abs(alpha2) #here whole term multipied by constant
         k2=k2+(4*np.pi*B2*B1*r1*ctb1rat*(f0r1-f0r2))/abs(alpha2)
         k2=k2*sgn
+        print(k2,'k2')
         return k1+k2
     kp1=np.where((alpha1>0) &(alpha2>0),k(B1p,B2p,c2b2ratp,R1,R2),0)
     kn1=np.where((alpha1>0) &(alpha2<0),k(B1n,B2n,c2b2ratn,R1,R2),0)
     helicity=kp1+kn1
     return helicity
-#print(kn(alpha1t,alpha2t))
+print(kn(3,-2))
 '''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = kn(alpha1,alpha2)
@@ -135,11 +136,11 @@ fig.colorbar(surf,shrink=0.5,aspect=5)
 #ax.set_ylim(0, 4.0)
 print(max(al1),min(al1))
 plt.savefig('pos_neg_a2_3d.png')
-plt.show()'''
-
-#for k_single check
-plt.plot(al1,kn(al1,al1))
-#plt.xlabel('a1r1')
-#plt.ylabel('a2r2a1r1,a1r1)')
-#plt.savefa2r2('Ktest.png') 
 plt.show()
+'''
+#for k_single check
+'''plt.plot(al1,kn(al1,al1))
+plt.xlabel('a1r1')
+plt.ylabel('a2r2a1r1,a1r1)')
+#plt.savefa2r2('Ktest.png') 
+plt.show()'''

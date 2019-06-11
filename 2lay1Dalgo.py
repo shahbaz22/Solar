@@ -35,7 +35,8 @@ def helicity(alpha1,alpha2):
 
     c2prod=j(0,a1r1)*j(1,a2r1)-sig*j(1,a1r1)*j(0,a2r1)
     b2prod=sig*j(1,a1r1)*y(0,a2r1)-j(0,a1r1)*y(1,a2r1)
-
+    print(c2prod,'c2prod')
+    print(b2prod,'b2prod')
     #print(sig)
 
     #print(np.shape(b2prod))
@@ -46,6 +47,7 @@ def helicity(alpha1,alpha2):
     dis=2/(np.pi*a2r1)
 
     c2b2rat=c2prod/b2prod
+    print(c2b2rat,'c2b2rat')
 
     def F0(x):
     	f=j(0,x)+c2b2rat*y(0,x)
@@ -55,6 +57,7 @@ def helicity(alpha1,alpha2):
     	return f
     'norm for positive a2 and negative a2'
     B1=1/(2*np.pi*(R2*b2prod*(F1(a2r2)/(abs(alpha2)*dis))+R1*ctb1rat))   
+    print(1/B1,'psi0')
     B2=B1*b2prod/dis
     C2=B2*c2b2rat
     print(B1)       
@@ -86,9 +89,10 @@ def helicity(alpha1,alpha2):
     
     helicity=k(alpha1,alpha2,R1,R2)
     return helicity
-'for k_single check'
-plt.plot(a1,helicity(a1,a1))
+print(helicity(3,-2))
+#'for k_single check'
+'''plt.plot(a1,helicity(a1,a1))
 plt.xlabel('a1r1')
 plt.ylabel('K')
 #plt.savefa2r2('Ktest.png') 
-plt.show()
+plt.show()'''

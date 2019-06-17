@@ -89,7 +89,7 @@ def helicity(alpha1,alpha2):
     
     helicity=k(alpha1,alpha2,R1,R2)
     return helicity
-print(helicity(3,-2))
+print(helicity(3,-1))
 #'for k_single check'
 '''plt.plot(a1,helicity(a1,a1))
 plt.xlabel('a1r1')

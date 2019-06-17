@@ -17,6 +17,7 @@ a1=np.linspace(0.1,3,800) # Bessel functions only take positive values
 a2=np.linspace(-4.01,4,800) #Assures that the arrays have the same number of elements
 a3=np.linspace(0.1,3,800)
 #a1,a2=np.meshgrid(a1,a2)
+
 scsp=scipy.special
 pi=np.pi
 'Function to take a1r1 and a1r1 vales can return 2D K'
@@ -69,8 +70,9 @@ def helicity(alpha1,alpha2,alpha3):
     cb2rat=np.where(b2prod==0,0,c2prod/b2prod)
     print(cb2rat,'cb2rat')
     'c3prod and b3prod lower down as they depend on F function'
-    b3prod=sig23*F1(a2r2)*y(0,a3r2)-F0(a2r2)*y(1,a3r2)
+    'assume y function always included in higher orders'
     c3prod=F0(a2r2)*j(1,a3r2)-sig23*F1(a2r2)*j(0,a3r2)
+    b3prod=sig23*F1(a2r2)*y(0,a3r2)-F0(a2r2)*y(1,a3r2)
     print('b3prod',b3prod)
     print('c3prod',c3prod)
     cb3rat=np.where(b3prod==0,0,c3prod/b3prod)
@@ -114,7 +116,7 @@ def helicity(alpha1,alpha2,alpha3):
 
     helicity=k1+k2+k3
     return helicity
-print(helicity(3,-2,-2))
+print(helicity(3,-1,-1))
 '''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = helicity(a1,a2,a2)

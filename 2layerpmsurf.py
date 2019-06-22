@@ -115,8 +115,8 @@ def kn(alpha1,alpha2):
     kn1=np.where((alpha1>0) &(alpha2<0),k(B1n,B2n,c2b2ratn,R1,R2),0)
     helicity=kp1+kn1
     return helicity
-print(kn(3,-1))
-'''fig=plt.figure()
+#print(kn(3,-1))
+fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = kn(alpha1,alpha2)
 zmax = 2.5
@@ -131,12 +131,13 @@ ax.set_ylabel('a2')
 ax.set_zlabel('K')
 #Add color bar
 fig.colorbar(surf,shrink=0.5,aspect=5) 
-#ax.set_zlim(zmin, zmax)
+ax.set_zlim(zmin, zmax)
 #ax.set_xlim(0, 3.0)
 #ax.set_ylim(0, 4.0)
 print(max(al1),min(al1))
 #plt.savefig('pos_neg_a2_3d.png')
-plt.show()'''
+plt.show()
+
 
 #for k_single check
 '''plt.plot(al1,kn(al1,al1))

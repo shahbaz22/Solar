@@ -9,8 +9,8 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import matplotlib.cm as cm
 import matplotlib.colors as cc
 from scipy import special
-R1=0.5
-R2=0.75
+R1=0.25
+R2=0.5
 R3=1
 'a1r1 already used in kn function'
 a1=np.linspace(0.1,3,800) # Bessel functions only take positive values
@@ -87,7 +87,7 @@ def helicity(alpha1,alpha2,alpha3):
     'When B3=0 ps1 (3rd lay cont.) is zero'
     B2=dis1*b2prod
     B3=dis2*B2*b3prod
-    ctbdiff=j(1,a1r1)*(1/abs(alpha1)-sig2/abs(alpha2))
+    ctbdiff=j(1,a1r1)*(1/abs(alpha1)-1/abs(alpha2))
     'ctbdiff known as ctb1rat in 2lay code'
     psi0=2*pi*(R2*B2*(F1(a2r2)/(abs(alpha2)))+R1*ctbdiff)
     psi1=(2*pi*B3/abs(alpha3))*(R3*G1(a3r3)-R2*G1(a3r2))      
@@ -96,6 +96,8 @@ def helicity(alpha1,alpha2,alpha3):
     B2=dis1*b2prod*B1
     B3=dis2*B2*b3prod
     print(B1,'B1')
+    print(B2,'B2')
+    print(B3,'B3')
     'now calculaing terms for k'
     k1=(2*pi*B1**2)*((R1**2)*(j(0,a1r1)**2+j(1,a1r1)**2)-2*R1*j(0,a1r1)*j(1,a1r1)/alpha1)/alpha1
     print(k1,'k1')
@@ -116,7 +118,7 @@ def helicity(alpha1,alpha2,alpha3):
 
     helicity=k1+k2+k3
     return helicity
-print(helicity(3,-1,-1))
+print(helicity(3,3,2))
 '''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = helicity(a1,a2,a2)

@@ -28,7 +28,7 @@ def get_helicityn(a):
 	rn=[0.25,0.5,0.75,1]
 	print(rn)
 	#print(rn[0],rn[2])
-	#print(len(an))
+	print(len(an))
 	#print(len(rn))
 	#print(an[0])
 	#print(an[2])
@@ -63,17 +63,18 @@ def get_helicityn(a):
 	'if some args. always +1 then always have diff order'
 	'hence some functions always remain same'
 	'increasing order F0->G0... ,F1->G1 wrt 3 lay code'
-	cn=np.zeros(len(an))
-	bn=np.zeros(len(an))
+	c=np.zeros(len(an))
+	b=np.zeros(len(an))
 	cbrat=np.zeros(len(an))
 	c2prod=j(0,an[0]*rn[0])*j(1,an[1]*rn[0])-sig(0,1)*j(1,an[0]*rn[0])*j(0,an[1]*rn[0])
 	b2prod=sig(0,1)*j(1,an[0]*rn[0])*y(0,an[1]*rn[0])-j(0,an[0]*rn[0])*y(1,an[1]*rn[0])
-	cn[0]=c2prod
-	bn[0]=b2prod
+	c[0]=c2prod
+	b[0]=b2prod
 	cbrat[0]=0
-	for i in range(len(an)):
+	
+	for i in np.arange(1,len(an),1):
 		if i<=(len(an)-2):
-			cbrat[i]=np.where(bn[i-1]==0,0,cn[i-1]/bn[i-1])
+			cbrat[i]=np.where(b[i-1]==0,0,c[i-1]/b[i-1])
 			print(cbrat)
 			cprod=F0(an[i]*rn[i],cbrat[i])*j(1,an[i+1]*rn[i])
 			cprod=cprod-sig(i,i+1)*F1(an[i]*rn[i],cbrat[i])*j(0,an[i+1]*rn[i])
@@ -81,12 +82,21 @@ def get_helicityn(a):
 			bprod=sig(i,i+1)*F1(an[i]*rn[i],cbrat[i])*y(0,an[i+1]*rn[i])
 			bprod=bprod-F0(an[i]*rn[i],cbrat[i])*y(1,an[i+1]*rn[i])
 			print(bprod)
-			cn[i]=cprod
-			bn[i]=bprod
+			c[i]=cprod
+			b[i]=bprod
 		'i+1 must not exceed len(an)'
 	#print(len)
-	return	'here is cn',cn,'here is bn',bn
-'next step would be to check values for constants with 2lay and 3 lay code'
-'need to fix program for when a vals negative'
+	return	'here is c',c,'here is bn',b
+	'next step after determining constants is as follows'
+	'generalise dis terms eg, dis[i]=pi*rn[i]*an[i+1]/2'
+	'bcn[i]=dis[i-1]*bn[i]*bcn[i-1], B2 needs to be completed outside for loop'
+	'next find pattern in psi and recalc bcn eg B1,B2,B3 normalized'
+	'''dis=np.zeros(len(an))
+	bn=np.zeros(len(an))
+	dis[0]=pi*rn[0]*an[1]/2
+	bn[1]=dis[0]'''
+
+
 print(get_helicityn(an))
+
 

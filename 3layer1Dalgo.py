@@ -118,7 +118,7 @@ def helicity(alpha1,alpha2,alpha3):
 
     helicity=k1+k2+k3
     return helicity
-print(helicity(3,3,2))
+print(helicity(3,1,-2))
 '''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = helicity(a1,a2,a2)

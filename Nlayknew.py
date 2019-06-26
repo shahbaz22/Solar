@@ -151,22 +151,50 @@ def get_helicityn(a):
     'k2 term requires the first value of ctbrat and in general the new value and the previous value ctbrat required'
     'cannot start loop from a lower value than 1'
     ctbr=np.zeros(len(a))
-    ctbr[0]=0
-
-    #ctb1rat=B1*R1*j(1,a1r1)*(1/alpha1-sig2/abs(alpha2))    
-    #k2=((R2**2)*(F0(a2r2)**2+F1(a2r2)**2)-2*R2*F0(a2r2)*F1(a2r2)/abs(alpha2))-(R1**2)*(F0(a2r1)**2+F1(a2r1)**2)
-    #k2=(k2+2*R1*F0(a2r1)*F1(a2r1)/abs(alpha2))*(2*pi*B2**2)/abs(alpha2) #here whole term multipied by constant
-    #k2=k2+(4*pi*B2*ctb1rat*(F0(a2r1)-F0(a2r2)))/abs(alpha2)
-    #k2=k2*sig1(1)
+    '''F0a2r2=F0(a[1]*r[1],cbr[0])
+    F1a2r2=F1(a[1]*r[1],cbr[0])
+    F0a2r1=F0(a[1]*r[0],cbr[0])
+    F1a2r1=F1(a[1]*r[0],cbr[0])
 
     ctbr[1]=b1*r[0]*j(1,a[0]*r[0])*(1/abs(a[0])-sig(0,1)/abs(a[1]))    
-    k2=((r[1]**2)*(F0(a[1]*r[1],cbr[0])**2+(F1(a[1]*r[1],cbr[0])**2)-2*r[1]*F0(a[1]*r[1],cbr[0])*F1(a[1]*r[1],cbr[0])/abs(a[1]))-(r[0]**2)*(F0(a[1]*r[0],cbr[0])**2+F1(a[1]*r[0],cbr[0])**2))
-    k2=(k2+2*r[0]*F0(a[1]*r[0],cbr[0])*F1(a[1]*r[0],cbr[0])/abs(a[1]))*(2*pi*b[0]**2)/abs(a[1]) #here whole term multipied by constant
-    k2=k2+(4*pi*b[0]*ctbr[1]*(F0(a[1]*r[0],cbr[0])-F0(a[1]*r[1],cbr[0])))/abs(a[1])
-    k2=k2*sig1(1)  
-    print('k2',k2)
-#    for i in np.arange(1,len(a),1):
-#      if i<=(len(a)-2):
+    k2=(r[1]**2)*(F0a2r2**2+F1a2r2**2)-2*r[1]*F0a2r2*F1a2r2/abs(a[1])-(r[0]**2)*(F0a2r1**2+F1a2r1**2)
+    k2=(k2+2*r[0]*F0a2r1*F1a2r1/abs(a[1]))*(2*pi*bn[0]**2)/abs(a[1]) #here whole term multipied by constant
+    k2=k2+(4*pi*bn[0]*ctbr[1]*(F0a2r1-F0a2r2))/abs(a[1])
+    k2=k2*sig1(1)'''
+    'np.roll used to shift inex of bn one to the right and add b1'
+    bn=np.roll(bn,1)
+    print('here is shifted bn',bn)
+    bn[0]=b1
+    print('here is complete bn',bn)
+    'shifting indices of cbr to start the loop from 1!!!!'
+    cbr=np.roll(cbr,1)
+    print('cbr',cbr)
+
+    for i in np.arange(1,len(a),1):
+      if i<=(len(a)-1):
+          F0a2r2=F0(a[i]*r[i],cbr[i])
+          F1a2r2=F1(a[i]*r[i],cbr[i])
+          F0a2r1=F0(a[i]*r[i-1],cbr[i])
+          F1a2r1=F1(a[i]*r[i-1],cbr[i])
+
+          ctbr[i]=bn[i-1]*r[i-1]*F1(a[i-1]*r[i-1],cbr[i-1])*(1/abs(a[i-1])-sig(i-1,i)/abs(a[i]))+ctbr[i-1]    
+          ks=(r[i]**2)*(F0a2r2**2+F1a2r2**2)-2*r[i]*F0a2r2*F1a2r2/abs(a[i])-(r[i-1]**2)*(F0a2r1**2+F1a2r1**2)
+          ks=(ks+2*r[i-1]*F0a2r1*F1a2r1/abs(a[i]))*(2*pi*bn[i]**2)/abs(a[i]) #here whole term multipied by constant
+          ks=ks+(4*pi*bn[i]*ctbr[i]*(F0a2r1-F0a2r2))/abs(a[i])
+          k[i]=ks*sig1(i)
+
+
+
+
+    #ctbr[1]=b1*r[0]*j(1,a[0]*r[0])*(1/abs(a[0])-sig(0,1)/abs(a[1]))    
+    #k2=(r[1]**2)*(F0(a[1]*r[1],cbr[0])**2+(F1(a[1]*r[1],cbr[0])**2))
+    #k2=k2-2*r[1]*F0(a[1]*r[1],cbr[0])*F1(a[1]*r[1],cbr[0])/abs(a[1])-(r[0]**2)*(F0(a[1]*r[0],cbr[0])**2+F1(a[1]*r[0],cbr[0])**2)
+    #k2=(k2+2*r[0]*F0(a[1]*r[0],cbr[0])*F1(a[1]*r[0],cbr[0])/abs(a[1]))*(2*pi*b[0]**2)/abs(a[1]) #here whole term multipied by constant
+    #k2=k2+(4*pi*b[0]*ctbr[1]*(F0(a[1]*r[0],cbr[0])-F0(a[1]*r[1],cbr[0])))/abs(a[1])
+    #k2=k2*sig1(1)  
+    print('ctbr term in k',ctbr)
+    print('k',k)
+
   
 
 

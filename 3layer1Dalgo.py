@@ -107,6 +107,7 @@ def helicity(alpha1,alpha2,alpha3):
     k2=(k2+2*R1*F0(a2r1)*F1(a2r1)/abs(alpha2))*(2*pi*B2**2)/abs(alpha2) #here whole term multipied by constant
     k2=k2+(4*pi*B2*ctb1rat*(F0(a2r1)-F0(a2r2)))/abs(alpha2)
     k2=k2*sig2
+    print('ctb1rat',ctb1rat)
     print(k2,'k2')
     'for k3: a2-->a3,R1-->R2,R2-->R3,sig2-->sig3,B1,B2-->B2,B3 ect. compared to k2'    
     ctb2rat=B2*R2*F1(a2r2)*(1/abs(alpha2)-sig23/abs(alpha3))+ctb1rat 
@@ -114,6 +115,8 @@ def helicity(alpha1,alpha2,alpha3):
     k3=(k3+2*R2*G0(a3r2)*G1(a3r2)/abs(alpha3))*(2*pi*B3**2)/abs(alpha3) #here whole term multipied by constant
     k3=k3+(4*pi*B3*ctb2rat*(G0(a3r2)-G0(a3r3)))/abs(alpha3)
     k3=k3*sig3
+    print('ctb2rat',ctb2rat)
+
     print(k3,'k3')
 
     helicity=k1+k2+k3

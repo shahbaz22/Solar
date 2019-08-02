@@ -1,6 +1,5 @@
-'not working program using for loops on a 3 layer model over arange of r'
+'working program using for loops on a 3 layer model over arange of r'
 'with B4=0 and including a3 which can be negative'
-'does not reduce to the 2 layer model'
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
@@ -10,8 +9,8 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import matplotlib.cm as cm
 import matplotlib.colors as cc
 from scipy import special
-R1=0.5
-R2=0.75
+R1=0.25
+R2=0.5
 R3=1
 'a1r1 already used in kn function'
 a1=np.linspace(0.1,3,800) # Bessel functions only take positive values
@@ -29,13 +28,13 @@ def helicity(alpha1,alpha2,alpha3):
     'Simplified meshgid vals' 
     'The order of computation being important'    
     def j(v,a):
-    	'Function to return bessel of 1st kind wrt order v,and R,a'
-    	BF11=scsp.jv(v,a)
-    	return (BF11)
+        'Function to return bessel of 1st kind wrt order v,and R,a'
+        BF11=scsp.jv(v,a)
+        return (BF11)
     def y(v,a):
-    	'Function to return bessel of 2st kind wrt order v,and R,a'
-    	BF22=scsp.yv(v,a)
-    	return (BF22)
+        'Function to return bessel of 2st kind wrt order v,and R,a'
+        BF22=scsp.yv(v,a)
+        return (BF22)
     'Simplified Variables'
     a1r1=alpha1*R1
     a2r1=abs(alpha2*R1)
@@ -88,7 +87,7 @@ def helicity(alpha1,alpha2,alpha3):
     'When B3=0 ps1 (3rd lay cont.) is zero'
     B2=dis1*b2prod
     B3=dis2*B2*b3prod
-    ctbdiff=j(1,a1r1)*(1/abs(alpha1)-1/abs(alpha2))
+    ctbdiff=j(1,a1r1)*(1/abs(alpha1)-sig2/abs(alpha2))
     'ctbdiff known as ctb1rat in 2lay code'
     psi0=2*pi*(R2*B2*(F1(a2r2)/(abs(alpha2)))+R1*ctbdiff)
     psi1=(2*pi*B3/abs(alpha3))*(R3*G1(a3r3)-R2*G1(a3r2))      
@@ -108,7 +107,6 @@ def helicity(alpha1,alpha2,alpha3):
     k2=(k2+2*R1*F0(a2r1)*F1(a2r1)/abs(alpha2))*(2*pi*B2**2)/abs(alpha2) #here whole term multipied by constant
     k2=k2+(4*pi*B2*ctb1rat*(F0(a2r1)-F0(a2r2)))/abs(alpha2)
     k2=k2*sig2
-    print('ctb1rat',ctb1rat)
     print(k2,'k2')
     'for k3: a2-->a3,R1-->R2,R2-->R3,sig2-->sig3,B1,B2-->B2,B3 ect. compared to k2'    
     ctb2rat=B2*R2*F1(a2r2)*(1/abs(alpha2)-sig23/abs(alpha3))+ctb1rat 
@@ -116,13 +114,11 @@ def helicity(alpha1,alpha2,alpha3):
     k3=(k3+2*R2*G0(a3r2)*G1(a3r2)/abs(alpha3))*(2*pi*B3**2)/abs(alpha3) #here whole term multipied by constant
     k3=k3+(4*pi*B3*ctb2rat*(G0(a3r2)-G0(a3r3)))/abs(alpha3)
     k3=k3*sig3
-    print('ctb2rat',ctb2rat)
-
     print(k3,'k3')
 
     helicity=k1+k2+k3
-    return 'total k,',helicity
-print(helicity(3,-2,-2))
+    return helicity
+print(helicity(2,2,4))
 '''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = helicity(a1,a2,a2)

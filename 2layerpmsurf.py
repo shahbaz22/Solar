@@ -16,7 +16,7 @@ al1=np.linspace(0.1,3,800) # Bessel functions only take positive values
 al2=np.linspace(-4.01,4,800) #Assures that the arrays have the same number of elements
 #al2test=np.linspace(0.01,-3,800)
 #al1test=np.linspace(0.1,1,800)
-alpha1,alpha2=np.meshgrid(al1,al2)
+#alpha1,alpha2=np.meshgrid(al1,al2)
 #alpha1t, alpha2t=np.meshgrid(al1test,al2test)
 scsp=scipy.special
 'Function to take a1r1 and a1r1 vales can return 2D K'
@@ -115,8 +115,8 @@ def kn(alpha1,alpha2):
     kn1=np.where((alpha1>0) &(alpha2<0),k(B1n,B2n,c2b2ratn,R1,R2),0)
     helicity=kp1+kn1
     return helicity
-#print(kn(3,-1))
-fig=plt.figure()
+print(kn(3,-2))
+'''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = kn(alpha1,alpha2)
 zmax = 2.5
@@ -136,7 +136,7 @@ ax.set_zlim(zmin, zmax)
 #ax.set_ylim(0, 4.0)
 print(max(al1),min(al1))
 #plt.savefig('pos_neg_a2_3d.png')
-plt.show()
+plt.show()'''
 
 
 #for k_single check

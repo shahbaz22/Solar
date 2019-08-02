@@ -13,7 +13,7 @@ R2=1
 'a1 already used in kn function'
 al1=np.linspace(0.5,3,200) # Bessel functions only take positive values
 al2=np.linspace(0.5,3,200) #Assures that the arrays have the same number of elements
-alpha1,alpha2=np.meshgrid(al1,al2)
+#alpha1,alpha2=np.meshgrid(al1,al2)
 scsp=scipy.special
 'Function to take a1 and a2 vales can return 2D K'
 'Used for making surface plot of a1,a2,K'
@@ -52,6 +52,7 @@ def Wn(alpha1,alpha2):
     	return f
     'norm=1 to find B1, then using B1 find C2, B2'
     B1=1/(2*np.pi*(R2*b2prod*(F1(ar)/(abs(alpha2)*dis))+R1*ctb1rat))   
+    print('B1',B1)
     B2=B1*b2prod/dis
     C2=B2*c2b2rat
 
@@ -80,9 +81,9 @@ def Wn(alpha1,alpha2):
         w2=sgn*w2 # apart from K1 the other part of Ks sign depends on the sign of a2
         return w2
     w=(w1(alpha1,B1,R1)+w2(alpha2,B2,R1,R2)) # multi. my constant
-    return w
-
-fig=plt.figure()
+    return w1(alpha1,B1,R1),w2(alpha2,B2,R1,R2),w
+print('w1,w2,w',Wn(2,4))
+'''fig=plt.figure()
 ax=fig.gca(projection='3d')
 fn = Wn(alpha1,alpha2)
 print(np.max(fn))
@@ -102,7 +103,7 @@ fig.colorbar(surf,shrink=0.5,aspect=5)
 #plt.ylim(2,1)
 #plt.xlim(1,2)
 plt.savefig('pos_a_3d_W.png')
-plt.show()
+plt.show()'''
 """
 plt.plot(al2,kn(al2,al2))
 plt.show()

@@ -1,4 +1,6 @@
 'working program using for N layer model over arange of r'
+'calculating nk and nw in same loop'
+'does not seem to make program quicker'
 import numpy as np
 import scipy
 from scipy.optimize import fsolve
@@ -13,18 +15,18 @@ scsp=scipy.special
 pi=np.pi
 
 'Array of helicity "a" used as inputs'
-a=[1,-2.5]
-r=[0.5,1]
-# r=[]
-# 'for loop to generate array of r values coresp. to n alpha values'
-# for i in np.linspace(len(a),1,len(a)):
-#   ra=1/i
-#   r.append(ra)
-# 'check for len(a)==len(r)'
-# if len(a)!=len(r):
-#   raise ValueError('dimension of a=/=r')
-# print('here is a',a)
-# print('here is r',r)
+a=[2,2,2,2]
+#r=[0.25,0.5,1]
+r=[]
+'for loop to generate array of r values coresp. to n alpha values'
+for i in np.linspace(len(a),1,len(a)):
+  ra=1/i
+  r.append(ra)
+'check for len(a)==len(r)'
+if len(a)!=len(r):
+  raise ValueError('dimensions of a=/=r')
+print('here is a',a)
+print('here is r',r)
 
 def get_helicityn(a):
     'function to get n values of helicty for n layers'
@@ -42,9 +44,6 @@ def get_helicityn(a):
         return (BF22)
     def j(v,x):
         BF11=scsp.jv(v,abs(x))
-        return (BF11)
-    def js(v,x):
-        BF11=scsp.jv(v,x)
         return (BF11)
     def sig(n1,n2):
         siga=np.sign(a[n1])*np.sign(a[n2])
@@ -121,7 +120,7 @@ def get_helicityn(a):
     dis[0]=pi*r[0]*abs(a[1])/2
     bn[0]=dis[0]*b[0]
 
-    ctbdiff=j(1,a[0]*r[0])*(1/a[0]-1/a[1])
+    ctbdiff=j(1,a[0]*r[0])*(1/abs(a[0])-sig(0,1)/abs(a[1]))
     'ctbdiff known as ctb1rat in 2lay code'
     psi[0]=2*pi*(r[1]*b[0]*(F1(a[1]*r[1],cbr[0])/(abs(a[1]))*dis[0])+r[0]*ctbdiff)
     
@@ -149,7 +148,7 @@ def get_helicityn(a):
     k=np.zeros(len(a))
     'k1'
     k[0]=(r[0]**2)*(j(0,a[0]*r[0])**2+j(1,a[0]*r[0])**2)
-    k[0]=sig1(0)*((2*pi*b1**2)/abs(a[0]))*(k[0]-2*(r[0]/abs(a[0]))*j(0,a[0]*r[0])*j(1,a[0]*r[0]))
+    k[0]=((2*pi*b1**2)/abs(a[0]))*(k[0]-2*(r[0]/abs(a[0]))*j(0,a[0]*r[0])*j(1,a[0]*r[0]))
     'if there is a print error it is due to a syntax error in the called equation'
     print('k[0]',k[0])
     'reason for k2==k[1] perfomed outside the for loop is because the k2 term is not general'
@@ -166,6 +165,12 @@ def get_helicityn(a):
     cbr=np.roll(cbr,1)
     print('cbr',cbr)
 
+    w=np.zeros(len(a))
+    mu0=4*pi*10**-7
+    w[0]=(r[0]**2)*(j(0,a[0]*r[0])**2+j(1,a[0]*r[0])**2)
+    w[0]=((pi/mu0)*b[0]**2)*(w[0]-(r[0]/abs(a[0]))*j(0,a[0]*r[0])*j(1,a[0]*r[0]))
+
+
     for i in np.arange(1,len(a),1):
       if i<=(len(a)-1):
           F0a2r2=F0(a[i]*r[i],cbr[i])
@@ -178,73 +183,40 @@ def get_helicityn(a):
           ks=(ks+2*r[i-1]*F0a2r1*F1a2r1/abs(a[i]))*(2*pi*bn[i]**2)/abs(a[i]) #here whole term multipied by constant
           ks=ks+(4*pi*bn[i]*ctbr[i]*(F0a2r1-F0a2r2))/abs(a[i])
           k[i]=ks*sig1(i)
+
+          ws=(r[i]**2)*(F0a2r2**2+F1a2r2**2)-r[i]*F0a2r2*F1a2r2/abs(a[i])-(r[i-1]**2)*(F0a2r1**2+F1a2r1**2)
+          w[i]=(ws+r[i-1]*F0a2r1*F1a2r1/abs(a[i]))*((pi/mu0)*bn[i]**2) #here whole term multipied by constant
     kt=np.sum(k)
  
     print('ctbr term in k',ctbr)
     print('k',k)
     print('total k,',kt)
     'if changing (total loop radius) r=!1 multiply arguments in ks by r'
-    def bsq(a):
-       B0=np.where(a==0,1/(np.pi),(a/(2*pi*j(1,a)))**2)
-       return B0
-    # plt.plot(np.linspace(-4,4,88888),bsq(np.linspace(-4,4,88888))) #to avoid zero
-    # #plt.plot(np.linspace(-4,4,99999),1/(2+j(1,np.linspace(-4,4,99999))**2))
-    # plt.plot(np.linspace(-4,4,88888),j(1,np.linspace(-4,4,88888)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.axvline(color='r',linestyle=':')
-    # # #plt.title('Wsingle with normalisation a2=0')
-    # # #plt.ylabel('Ws')
-    # plt.ylim([-1,4])
-    # # #plt.savefig('ws41')
-    # plt.show()
-
-    def ksr(al):
+    def ks(al):
       'k single layer for root finding, with r as total radius of loop, B,L=1'
       'using normalisation'   
-      ks1=(2*pi/al)*bsq(al)*((js(0,al)**2+js(1,al)**2)-(2/al)*js(0,al)*js(1,al))
-      return ks1-kt
-    
-    rootal=scipy.optimize.brentq(ksr, -3.83, 3.83)
-    print('alpha root',rootal)
-    #plt.plot(np.arange(-3,3,0.003),ksr(np.arange(-3,3,0.003)))
-    #plt.show()
-    'first case is seperate, L=1'
-    w=np.zeros(len(a))
-    mu0=1#4*pi*10**-7
-    w0=(r[0]**2)*(j(0,a[0]*r[0])**2+j(1,a[0]*r[0])**2)
-    w[0]=((pi/mu0)*bn[0]**2)*(w0-(r[0]/abs(a[0]))*j(0,a[0]*r[0])*j(1,a[0]*r[0]))
-    print('bn[0]',bn[0])
-    for i in np.arange(1,len(a),1):
-      if i<=(len(a)-1):
-        F0a2r2=F0(a[i]*r[i],cbr[i])
-        F1a2r2=F1(a[i]*r[i],cbr[i])
-        F0a2r1=F0(a[i]*r[i-1],cbr[i])
-        F1a2r1=F1(a[i]*r[i-1],cbr[i])
-        ws=(r[i]**2)*(F0a2r2**2+F1a2r2**2)-r[i]*F0a2r2*F1a2r2/abs(a[i])-(r[i-1]**2)*(F0a2r1**2+F1a2r1**2)
-        w[i]=(ws+r[i-1]*F0a2r1*F1a2r1/abs(a[i]))*((pi/mu0)*bn[i]**2) #here whole term multipied by constant
-    print('work',w)
-    print('intial energy',np.sum(w))
-    def ws(al1):
-        'w single (relaxed state) for root finding,R=1'
-        j00=js(0,al1)
-        j11=js(1,al1)  
-        ws1=np.where(al1==0,0.5*np.pi*bsq(al1),(np.pi)*bsq(al1)*((j00**2+j11**2)-j00*j11/al1))
-        return ws1
-    #print('final energy',ws(rootal))
-    dw=np.sum(w)-ws(rootal)
-    # plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.title("2 layer model, a={0}, dw={1:09.4f}, roota={2:.4f}".format(a, dw, rootal))
-    # #plt.xlim([alpha1,alpha2])
-    # plt.ylim([-0.5,3])
-    # plt.ylabel('k(a)-k(a1,a2)')
-    # plt.xlabel('a')
-    # #plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
-    # plt.show()
+      ks1=(abs(al)/(2*pi*j(1,al)**2))*((j(0,al)**2+j(1,al)**2)-2*(1/abs(al))*j(0,al)*j(1,al))
+      return ks1
 
-    print('a=',a)
-    print('rootal=',rootal)
-    return 'Change in work=', dw
+    ava=np.average(a)
+    arr=ks(np.arange(-20000,20,0.03))-kt
+    print('min',min(arr))
+    print(ava,'average')
+
+    rootal=fsolve(ks,ava)
+    print('alpha root',rootal)
+    #plt.plot(np.arange(0.000001,0.1,0.0000003),ks(np.arange(0.000001,0.1,0.0000003)))
+    #plt.show()
+
+    print('work',w)
+    print('total intial work',np.sum(w))
+    def ws(al):
+        'w single (relaxed state) for root finding,R=1'
+        ws1=(j(0,al)**2+j(1,al)**2)
+        ws1=((pi/mu0)*(abs(al)/(2*pi*j(1,al)))**2)*(ws1-(1/abs(al))*j(0,al)*j(1,al))
+        return ws1
+    dw=np.sum(w)-ws(rootal)
+    return 'Change in work', dw
 
 
     'next step to look for similarities between k1'

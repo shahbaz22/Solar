@@ -45,6 +45,7 @@ def deltaw(alpha1,alpha2):
 
 
     ctb1rat=j(1,a1r1)*(1/alpha1-1/alpha2)
+    print('ctb1rat',ctb1rat)
     'if there is an error double check sign of dis and ctb1rat'
     dis=2/(np.pi*a2r1)
 
@@ -139,18 +140,18 @@ def deltaw(alpha1,alpha2):
     #print(ws(rootal),'final energy')
     
     #np.arange didn't allow larger to smaller range
-    # plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.title("2 layer model, a1= {}, a2={}, dw={}, roota={}".format(alpha1 ,alpha2, dw, rootal))
-    # #plt.xlim([alpha1,alpha2])
-    # plt.ylim([-0.5,3])
-    # plt.ylabel('k(a)-k(a1,a2)')
-    # plt.xlabel('a')
-    # #plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
-    # plt.show()
+    plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
+    plt.axhline(color='r',linestyle=':')
+    plt.title("2 layer model, a1= {}, a2={}, dw={}, roota={}".format(alpha1 ,alpha2, dw, rootal))
+    #plt.xlim([alpha1,alpha2])
+    plt.ylim([-0.5,3])
+    plt.ylabel('k(a)-k(a1,a2)')
+    plt.xlabel('a')
+    #plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
+    plt.show()
     
     return dw
-print(deltaw(1,-2.5))
+print(deltaw(-2,1))
 # a2=np.arange(-8,8,0.3)
 # print(a2,'a2')
 # a2w=np.zeros(len(a2))

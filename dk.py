@@ -13,17 +13,20 @@ scsp=scipy.special
 pi=np.pi
 
 'Array of helicity "a" used as inputs'
-a=[1,-2,3,5,-8,-5,-6]
-r=[]
-'for loop to generate array of r values coresp. to n alpha values'
-for i in np.linspace(len(a),1,len(a)):
-  ra=1/i
-  r.append(ra)
+al=[1,2,3,-2]
+rl=np.linspace(0,1,len(al)+1)
+'removing 0 from rlin'
+rl=rl[1:]
+# r=[]
+# 'for loop to generate array of r values coresp. to n alpha values'
+# for i in np.linspace(len(a),1,len(a)):
+#   ra=1/i
+#   r.append(ra)
 
-print('here is a',a)
-print('here is r',r)
+print('here is a',al)
+print('here is r',rl)
 
-def get_dw_n(a,r):
+def get_dk_n(a,r):
     'function to get n values of helicty for n layers'
     'r is array for radii such that a[1]->r[1]...a[n]->r[n]'
     'if cbrat=0 then j obtained'
@@ -180,135 +183,37 @@ def get_dw_n(a,r):
           ks=ks+(4*pi*bn[i]*ctbr[i]*(F0a2r1-F0a2r2))/abs(a[i])
           k[i]=ks*sig1(i)
     kt=np.sum(k)
- 
-    # print('ctbr term in k',ctbr)
-    # print('k',k)
-    # print('total k,',kt)
-    # 'if changing (total loop radius) r=!1 multiply arguments in ks by r'
+
     def bsq(a):
        B0=np.where(a==0,1/(np.pi),(a/(2*pi*j(1,a)))**2)
        return B0
-    # plt.plot(np.linspace(-4,4,88888),bsq(np.linspace(-4,4,88888))) #to avoid zero
-    # #plt.plot(np.linspace(-4,4,99999),1/(2+j(1,np.linspace(-4,4,99999))**2))
-    # plt.plot(np.linspace(-4,4,88888),j(1,np.linspace(-4,4,88888)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.axvline(color='r',linestyle=':')
-    # # #plt.title('Wsingle with normalisation a2=0')
-    # # #plt.ylabel('Ws')
-    # plt.ylim([-1,4])
-    # # #plt.savefig('ws41')
-    # plt.show()
 
     def ksr(al):
       'k single layer for root finding, with r as total radius of loop, B,L=1'
       'using normalisation'   
       ks1=(2*pi/al)*bsq(al)*((js(0,al)**2+js(1,al)**2)-(2/al)*js(0,al)*js(1,al))
       return ks1-kt
-    
     rootal=scipy.optimize.brentq(ksr, -3.83, 3.83)
-    # print('alpha root',rootal)
-    #plt.plot(np.arange(-3,3,0.003),ksr(np.arange(-3,3,0.003)))
-    #plt.show()
-    'first case is seperate, L=1'
-    w=np.zeros(len(a))
-    mu0=1#4*pi*10**-7
-    w0=(r[0]**2)*(j(0,a[0]*r[0])**2+j(1,a[0]*r[0])**2)
-    w[0]=((pi/mu0)*bn[0]**2)*(w0-(r[0]/abs(a[0]))*j(0,a[0]*r[0])*j(1,a[0]*r[0]))
-    # print('bn[0]',bn[0])
-    for i in np.arange(1,len(a),1):
-      if i<=(len(a)-1):
-        F0a2r2=F0(a[i]*r[i],cbr[i])
-        F1a2r2=F1(a[i]*r[i],cbr[i])
-        F0a2r1=F0(a[i]*r[i-1],cbr[i])
-        F1a2r1=F1(a[i]*r[i-1],cbr[i])
-        ws=(r[i]**2)*(F0a2r2**2+F1a2r2**2)-r[i]*F0a2r2*F1a2r2/abs(a[i])-(r[i-1]**2)*(F0a2r1**2+F1a2r1**2)
-        w[i]=(ws+r[i-1]*F0a2r1*F1a2r1/abs(a[i]))*((pi/mu0)*bn[i]**2) #here whole term multipied by constant
-    # print('work',w)
-    # print('intial energy',np.sum(w))
-    def ws(al1):
-        'w single (relaxed state) for root finding,R=1'
-        j00=js(0,al1)
-        j11=js(1,al1)  
-        ws1=np.where(al1==0,0.5*np.pi*bsq(al1),(np.pi)*bsq(al1)*((j00**2+j11**2)-j00*j11/al1))
-        return ws1
-    # print('final energy',ws(rootal))
-    dw=np.sum(w)-ws(rootal)
-    # plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.title("2 layer model, a={0}, dw={1:09.4f}, roota={2:.4f}".format(a, dw, rootal))
-    # #plt.xlim([alpha1,alpha2])
-    # plt.ylim([-0.5,3])
-    # plt.ylabel('k(a)-k(a1,a2)')
-    # plt.xlabel('a')
-    # #plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
-    # plt.show()
-
-    # print('a=',a)
-    # print('r=',r)
-    # print('rootal=',rootal)
-    # print('Change in work=', dw)
-    return dw
-
-
-    'next step to look for similarities between k1'
-    'and ksingle then to find roots'  
-
-
-#print(get_dw_n(a,r))
-
-#function to generate linear alpha profile wrt r
-def lindw(gamma,num_lays,a0):
-	#specifify number of alpha and r values
-	#need to cut r values into discrete equally spaced chunks between 0-1
-	#num-lays=num_alpha
-	#ignor r[0] as it's 0
-    'function to create linear a vs r profile for n layers'
-    alin=np.zeros(num_lays)
-    alin[0]=a0
-    rlin=np.linspace(0,1,num_lays+1)
-    'removing 0 from rlin'
-    rlin=rlin[1:]
-    for i in np.arange(1,num_lays,1):
-        alin[i]=alin[0]+(0.5*gamma*rlin[i-1])
-    #ar[num_lays]=ar[num_lays-1]+0.5*gamma*r[num_lays-1] gives error commented
-    #ar=ar[1:]
     
-    # print('rlin',rlin)
-    # print('alin',alin)
-    # plt.bar(rlin,alin,align='edge' ,edgecolor='red')#,alpha=0.5)
-    # plt.xlim(rlin[0],rlin[-1])
-    # rshift=0.5*(rlin[1]-rlin[0])
-    # rshift=rshift+rlin
-    # ashift=0.5*(alin[1]-alin[0])
-    # ashift=alin-ashift
-    # plt.scatter(rshift,alin)
-    # print(ashift,'ashift')
-    # print('rshift',rshift)
-    # plt.plot(rlin,ashift,color='black')#,alpha=0.5)
-    # plt.xlabel('r')
-    # plt.ylabel('a')
-    # plt.title('Linear cylindrical model alpha vs r')
-    # plt.show()
-    return get_dw_n(alin,rlin)
-a=lindw(5,11,1)
-# print('a',a)
-'ng is the number of gradient variations, a0 is starting point for layer 1'
-ng = 3
-nlays=11
-a0=1
-ng=np.arange(1,ng,0.08)
-dwrange=np.zeros(len(ng))
-for i in range(1,len(ng)):
-    dwrange[i]=lindw(ng[i],nlays,a0)
-plt.plot(ng**2,dwrange)
-plt.scatter(ng**2,dwrange,color='red')
-#plt.ylim(0,2)
-plt.xlabel('gamma^2')
-plt.ylabel('dw')
-plt.title('Repeated {} layer relaxation model with a0={}'.format(nlays-1 ,a0))
-#plt.xlim(0,13)
-#plt.savefig('gammavsdwsq')
-plt.show()
-    
+    rshift=0.5*(r[1]-r[0])
+    rshift=-rshift+r
 
+    plt.scatter(rshift,k-ksr(rootal))
+    plt.plot(rshift,k-ksr(rootal))
+    plt.title("{0} layer model, a={1}, dk={2:09.4f}, roota={3:.4f}".format(len(a),a, kt-ksr(rootal), rootal))
 
+    plt.vlines(r,min(k),max(k),linestyle='--',color='red')
+    plt.vlines(0,min(k),max(k),linestyle='--',color='red')
+    plt.hlines(0,0,1,linestyle='--')
+    plt.xlabel('r')
+    plt.ylabel('k(a,r)-k(roota)')
+    plt.show()
+    print('k',k)
+    print('ksr',ksr(rootal))
+    print(rootal,'rootal')
+
+    return k-ksr(rootal)    
+
+ 
+
+get_dk_n(al,rl)

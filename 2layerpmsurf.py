@@ -1,5 +1,4 @@
-'working program for K surf plot for'
-'a2 values >0,=0,<0, a1 always >0'
+'working program for K surf plot for a2, a1 values, older code using np.where'
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
@@ -12,11 +11,11 @@ from scipy import special
 R1=0.5
 R2=1.0
 'a1r1 already used in kn function'
-al1=np.linspace(0.1,3,800) # Bessel functions only take positive values
-al2=np.linspace(-4.01,4,800) #Assures that the arrays have the same number of elements
+# al1=np.linspace(0.1,3,800) # Bessel functions only take positive values
+# al2=np.linspace(-4.01,4,800) #Assures that the arrays have the same number of elements
 #al2test=np.linspace(0.01,-3,800)
 #al1test=np.linspace(0.1,1,800)
-#alpha1,alpha2=np.meshgrid(al1,al2)
+# alpha1,alpha2=np.meshgrid(al1,al2)
 #alpha1t, alpha2t=np.meshgrid(al1test,al2test)
 scsp=scipy.special
 'Function to take a1r1 and a1r1 vales can return 2D K'
@@ -115,33 +114,34 @@ def kn(alpha1,alpha2):
     kn1=np.where((alpha1>0) &(alpha2<0),k(B1n,B2n,c2b2ratn,R1,R2),0)
     helicity=kp1+kn1
     return helicity
-print(kn(3,-2))
-'''fig=plt.figure()
-ax=fig.gca(projection='3d')
-fn = kn(alpha1,alpha2)
-zmax = 2.5
-zmin= -0.5 #can log norm function take negative values?
-#norm = cc.LogNorm(vmin=zmin, vmax=zmax)
-norm=cc.PowerNorm(gamma=1)
-surf=ax.plot_surface(alpha1,alpha2, fn, cmap=cm.hot,
-                     linewidth=0,antialiased=False,
-                     norm=norm)
-ax.set_xlabel('a1')
-ax.set_ylabel('a2')
-ax.set_zlabel('K')
-#Add color bar
-fig.colorbar(surf,shrink=0.5,aspect=5) 
-ax.set_zlim(zmin, zmax)
-#ax.set_xlim(0, 3.0)
-#ax.set_ylim(0, 4.0)
-print(max(al1),min(al1))
-#plt.savefig('pos_neg_a2_3d.png')
-plt.show()'''
+print(kn(2,-4))
+'3d plot code'
+# fig=plt.figure()
+# ax=fig.gca(projection='3d')
+# fn = kn(alpha1,alpha2)
+# zmax = 2.5
+# zmin= -0.5 #can log norm function take negative values?
+# #norm = cc.LogNorm(vmin=zmin, vmax=zmax)
+# norm=cc.PowerNorm(gamma=1)
+# surf=ax.plot_surface(alpha1,alpha2, fn, cmap=cm.hot,
+#                      linewidth=0,antialiased=False,
+#                      norm=norm)
+# ax.set_xlabel('a1')
+# ax.set_ylabel('a2')
+# ax.set_zlabel('K')
+# #Add color bar
+# fig.colorbar(surf,shrink=0.5,aspect=5) 
+# ax.set_zlim(zmin, zmax)
+# #ax.set_xlim(0, 3.0)
+# #ax.set_ylim(0, 4.0)
+# print(max(al1),min(al1))
+# #plt.savefig('pos_neg_a2_3d.png')
+# plt.show()
 
 
 #for k_single check
-'''plt.plot(al1,kn(al1,al1))
-plt.xlabel('a1r1')
-plt.ylabel('a2r2a1r1,a1r1)')
-#plt.savefa2r2('Ktest.png') 
-plt.show()'''
+# plt.plot(al1,kn(al1,al1))
+# plt.xlabel('a')
+# plt.ylabel('K')
+# plt.savefig('ksingle.png') 
+# plt.show()

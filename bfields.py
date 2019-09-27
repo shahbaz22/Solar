@@ -1,4 +1,4 @@
-'not working program using for N layer model for Bz, Bt vs r'
+'working program using  mutli-layer model to calculate force-free fields for Bz, Bt, alpha vs r'
 import numpy as np
 import scipy
 from scipy.optimize import fsolve
@@ -13,10 +13,13 @@ scsp=scipy.special
 pi=np.pi
 
 'Array of helicity "a" used as inputs'
-a=[4,2,1,3,4,-1,-5]
-r=np.linspace(0,1,len(a)+1)
-'removing 0 from rlin'
-r=r[1:]
+a1 =[ 1,2,3,-1,4]
+r1=[0.25,0.5,0.6,0.75,1]
+# r1=np.linspace(0.01,1,len(a1))
+# r1=r1[1:]
+
+# print('here is a1',a1)
+#print('here is r1',r1)
 #r=[0.5,0.75,1]
 # r=[]
 # 'for loop to generate array of r values coresp. to n alpha values'
@@ -24,17 +27,17 @@ r=r[1:]
 #   ra=1/i
 #   r.append(ra)
 
-print('here is a',a)
-print('here is r',r)
-
-def get_dw_n(a,r):
+# print('here is a',a)
+# print('here is r',r)
+def getb(a,r):
     'function to get n values of helicty for n layers'
     'r is array for radii such that a[1]->r[1]...a[n]->r[n]'
     'if cbrat=0 then j obtained'
     'cbr determins order of function, eg. G0,G1 when c3/b3 '
-    'check for len(a)==len(r)'
+    
     if len(a)!=len(r):
-        raise ValueError('dimension of a=/=r')
+        raise ValueError('dimension of a=/=r')    
+    
     def F0(x,cbrat):
         f=j(0,abs(x))+cbrat*y(0,abs(x))
         return f
@@ -83,10 +86,12 @@ def get_dw_n(a,r):
     'rememebr python index is one below actual index as it starts from 0'
     'start from 1 in the for loop and end at index len(a)-1'
     'here i is the index value'
-
+    # print('np.arange(1,len(a),1)',np.arange(1,len(a),1))
+    # print('len(a)-2',len(a)-2)
     for i in np.arange(1,len(a),1): 
       if i<=(len(a)-2):
         cbr[i]=np.where(b[i-1]==0,0,c[i-1]/b[i-1])
+        # print('cbr in loop',cbr[i])
         'in cprod the previous value of cbr is required' 
         'eg. for B3 (b[1]), F1 is used and reqs. c2/b2==c[0]/b[0]==cbr[1]'
         cprod=F0(a[i]*r[i],cbr[i])*j(1,a[i+1]*r[i])
@@ -94,16 +99,27 @@ def get_dw_n(a,r):
         bprod=sig(i,i+1)*F1(a[i]*r[i],cbr[i])*y(0,a[i+1]*r[i])
         b[i]=bprod-F0(a[i]*r[i],cbr[i])*y(1,a[i+1]*r[i])
         'i+1 must not exceed len(a)'
-    print('here is c',c)
-    print('here is b',b)
-    'ida is an array which assigns true when b not equal to zero, in the array b'
+    #print('here is c',c)
+    #print('here is b',b)
+    'next step after determining constats is as follows'
+    'generalise dis terms eg, dis[i]=pi*r[i]*a[i+1]/2'
+    'bcn[i]=dis[i-1]*bn[i]*bcn[i-1], B2 needs to be completed outside for loop'
+    'next find patter in psi and recalc bcn eg B1,B2,B3 normalized'
+    'Psi0 will keep increasing with number of layers chaging B1'
+    'rememebr index zero is first element in python'
+    'B2=b[0], B3=b[1], ect.'
+    'for loop below used to recalculate cbr values as final cbr value outside of'
+    'range of above for loop, due to final value of c,b depending on cbr[i-1]'
+    #ida = np.where(b!=0)
+    #idb = np.where(b==0)
+    #cbr[ida] = c[ida]/b[ida]
+    #cbr[idb] = 0
+
     ida = b!=0
-    print(ida)
-    'cbr[ida], collects all elements in c/b with are both true and only divides those elements'
     cbr[ida]=c[ida]/b[ida]
-    'the remaining elements are set to zero where ida is false'
     cbr[~ida] = 0
     print('here is cbr',cbr)
+
 
     'want to specify the intial field Bz ,Bt'
     'compute all other fields inside for loop'
@@ -145,8 +161,8 @@ def get_dw_n(a,r):
     cn = np.roll(cn,1)
     bn = np.roll(bn,1)
 
-    print('bn',bn)
-    print('cn',cn)
+    print('b',b)
+    print('c',c)
     for i in np.arange(1,len(a),1):
         'for dis[1]==dis3, use a[2]==a3'
         bzr[i]=bn[i]*j(0,a[i]*rma[i])+cn[i]*y(0,a[i]*rma[i])
@@ -159,10 +175,10 @@ def get_dw_n(a,r):
     for i in np.arange(1,len(a),1):
         plt.plot(rma[i],bzr[i],color='blue')
         plt.plot(rma[i],btr[i],color='green',linestyle='--')
-    plt.vlines(r,0,1,color='red',linestyle='-')
+    plt.vlines(r,1,-0.2,color='red',linestyle='-')
     plt.xlabel('r')
     plt.ylabel('B')
-    plt.title('a={}'.format(a))
+    #plt.title('a={}'.format(a))
     plt.legend()
     plt.savefig('bfieldscont')
     plt.show()
@@ -171,5 +187,16 @@ def get_dw_n(a,r):
 
     return ida
 
-get_dw_n(a,r)
-
+def aprofile(r,l):
+    bz=(1-(l**2)/7+((l**2)/7)*(1-r**2)**7 - l**2*r**2*(1-r**2)**6)**0.5
+    alp=2*l*(1-r**2)**2*(1-4*r**2)/bz
+    bt=l*r*((1-r**2))**3
+    return alp
+# r1=np.linspace(0.01,1.01,1)
+# a1=aprofile(r1,2)
+print('a1',a1)
+# a1[-2]=0.01
+# a1[-1]=0.5
+# a1[-3]=0.1
+print('r1',r1)
+getb(a1,r1)

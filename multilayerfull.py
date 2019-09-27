@@ -1,4 +1,5 @@
-'working program using for N layer model over arange of r'
+'working program using for multi-layer model over arange of r'
+'program can calculate k,w, dw'
 import numpy as np
 import scipy
 from scipy.optimize import fsolve
@@ -9,33 +10,29 @@ from matplotlib.ticker import LinearLocator, FormatStrFormatter
 import matplotlib.cm as cm
 import matplotlib.colors as cc
 from scipy import special
-from copy import copy
+from matplotlib.ticker import StrMethodFormatter
 scsp=scipy.special
 pi=np.pi
 
-'Array of helicity "a" used as inputs'
-a=[2,2,1,1]
-r=[0.25,0.5,0.75,1]
+'Array of helicity "a", "r" used as inputs'
+# a1 =[ 3.9995996,   3.93234086,  3.64907622,  2.79882793,  0.95293295, -1.30292591,
+#  -2.88752223, -3.46387526, -2.61891399,  0.37831325]
+# #r1=[0.25,0.5,0.75,1]
+# r1=np.linspace(0.01,1,len(a1))
+# r1=r1[1:]
 
-# r=np.linspace(0,1,len(a)+1)
-# 'removing 0 from rlin'
-# r=r[1:]
-# 'for loop to generate array of r values coresp. to n alpha values'
-# for i in np.linspace(len(a),1,len(a)):
-#   ra=1/i
-#   r.append(ra)
+# print('here is a1',a1)
+# print('here is r1',r1)
 
-print('here is a',a)
-print('here is r',r)
-
-def get_dw_n(a,r):
+def getdwn(a,r):
     'function to get n values of helicty for n layers'
     'r is array for radii such that a[1]->r[1]...a[n]->r[n]'
     'if cbrat=0 then j obtained'
     'cbr determins order of function, eg. G0,G1 when c3/b3 '
-    'check for len(a)==len(r)'
+    
     if len(a)!=len(r):
-        raise ValueError('dimension of a=/=r')
+        raise ValueError('dimension of a=/=r')    
+    
     def F0(x,cbrat):
         f=j(0,abs(x))+cbrat*y(0,abs(x))
         return f
@@ -89,7 +86,7 @@ def get_dw_n(a,r):
     for i in np.arange(1,len(a),1): 
       if i<=(len(a)-2):
         cbr[i]=np.where(b[i-1]==0,0,c[i-1]/b[i-1])
-        #print('cbr in loop',cbr[i])
+        # print('cbr in loop',cbr[i])
         'in cprod the previous value of cbr is required' 
         'eg. for B3 (b[1]), F1 is used and reqs. c2/b2==c[0]/b[0]==cbr[1]'
         cprod=F0(a[i]*r[i],cbr[i])*j(1,a[i+1]*r[i])
@@ -97,8 +94,8 @@ def get_dw_n(a,r):
         bprod=sig(i,i+1)*F1(a[i]*r[i],cbr[i])*y(0,a[i+1]*r[i])
         b[i]=bprod-F0(a[i]*r[i],cbr[i])*y(1,a[i+1]*r[i])
         'i+1 must not exceed len(a)'
-    # print('here is c',c)
-    # print('here is b',b)
+    print('here is c',c)
+    print('here is b',b)
     'next step after determining constats is as follows'
     'generalise dis terms eg, dis[i]=pi*r[i]*a[i+1]/2'
     'bcn[i]=dis[i-1]*bn[i]*bcn[i-1], B2 needs to be completed outside for loop'
@@ -116,7 +113,7 @@ def get_dw_n(a,r):
     ida = b!=0
     cbr[ida]=c[ida]/b[ida]
     cbr[~ida] = 0
-    # print('here is cbr',cbr)
+    print('here is cbr',cbr)
 
     dis=np.zeros(len(a))
     bn=np.zeros(len(a))
@@ -126,10 +123,9 @@ def get_dw_n(a,r):
     dis[0]=pi*r[0]*abs(a[1])/2
     bn[0]=dis[0]*b[0]
 
-    ctbdiff=j(1,a[0]*r[0])*(1/abs(a[0])-sig(0,1)/abs(a[1]))
-    # print(ctbdiff,'ctbdiff')
+    ctbdiff=j(1,a[0]*r[0])*(1/a[0]-1/a[1])
     'ctbdiff known as ctb1rat in 2lay code'
-    psi[0]=2*pi*(r[1]*b[0]*F1(a[1]*r[1],cbr[0])*dis[0]/((abs(a[1])))+r[0]*ctbdiff)
+    psi[0]=2*pi*(r[1]*b[0]*(F1(a[1]*r[1],cbr[0])/(abs(a[1]))*dis[0])+r[0]*ctbdiff)
     
     # print('psi[0]',psi[0])
     'bn term computed outside of loop to allow for'
@@ -140,11 +136,11 @@ def get_dw_n(a,r):
         'for dis[1]==dis3, use a[2]==a3'
         dis[i]=pi*r[i]*abs(a[i+1])/2
         bn[i]=dis[i]*b[i]*bn[i-1]
-        psi[i]=(2*pi*bn[i]/abs(a[i+1]))*(r[1+i]*F1(a[i+1]*r[i+1],cbr[i])-sig(i,i+1)*r[i]*F1(a[i+1]*r[i],cbr[i]))
-    #print('array of psi',psi)
+        psi[i]=(2*pi*bn[i]/abs(a[i+1]))*(r[1+i]*F1(a[i+1]*r[i+1],cbr[i])-r[i]*F1(a[i+1]*r[i],cbr[i]))
+    # print('array of psi',psi)
     'len(a)-1 values for psi and psi0 containts 1st and 2nd layer'    
     psit=np.sum(psi)
-    #print('total psi',psit)
+    # print('total psi',psit)
     b1=1/psit
     # print('here is b1',b1)
     'element-wise multiplication using np.dot'
@@ -189,7 +185,7 @@ def get_dw_n(a,r):
     # print('ctbr term in k',ctbr)
     # print('k',k)
     # print('total k,',kt)
-    # 'if changing (total loop radius) r=!1 multiply arguments in ks by r'
+    'if changing (total loop radius) r=!1 multiply arguments in ks by r'
     def bsq(a):
        B0=np.where(a==0,1/(np.pi),(a/(2*pi*j(1,a)))**2)
        return B0
@@ -236,11 +232,11 @@ def get_dw_n(a,r):
         j11=js(1,al1)  
         ws1=np.where(al1==0,0.5*np.pi*bsq(al1),(np.pi)*bsq(al1)*((j00**2+j11**2)-j00*j11/al1))
         return ws1
-    # print('final energy',ws(rootal))
+    #print('final energy',ws(rootal))
     dw=np.sum(w)-ws(rootal)
     # plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
     # plt.axhline(color='r',linestyle=':')
-    # plt.title(" a={0}, dw={1:09.4f}, roota={2:.4f}".format(a, dw, rootal))
+    # plt.title("2 layer model, a={0}, dw={1:09.4f}, roota={2:.4f}".format(a, dw, rootal))
     # #plt.xlim([alpha1,alpha2])
     # plt.ylim([-0.5,3])
     # plt.ylabel('k(a)-k(a1,a2)')
@@ -249,51 +245,30 @@ def get_dw_n(a,r):
     # plt.show()
 
     # print('a=',a)
-    # print('r=',r)
     # print('rootal=',rootal)
-    # print('i work=', np.sum(w))
-    # print('f work=', ws(rootal))
     return dw
 
-#print(get_dw_n(a,r))
+#print(getdwn(a1,r1))
 
-
-
-'Hood et al field profile'
+'Hood et al 2009 field profile'
 def aprofile(r,l):
     bz=(1-(l**2)/7+((l**2)/7)*(1-r**2)**7 - l**2*r**2*(1-r**2)**6)**0.5
     alp=2*l*(1-r**2)**2*(1-4*r**2)/bz
     bt=l*r*((1-r**2))**3
     return alp
-def aprofile0(r,l):
-    bz=(1-(l**2)/7+((l**2)/7)*(1-r**2)**7 - l**2*r**2*(1-r**2)**6)**0.5
-    alp=2*l*(1-r**2)**2*(1-4*r**2)/bz
-    bt=l*r*((1-r**2))**3
-    return alp
-plt.plot(np.linspace(0,1.0,211),aprofile0(np.linspace(0,1.01,211),2),color='blue')#label='Bz')
-#plt.plot(np.linspace(0,1.0,211),aprofile0(np.linspace(0,1.01,211),2),color='green',label='Bt',linestyle='--')
-plt.xlabel('r')
-plt.ylabel('a')
-plt.hlines(0,0,1,linestyle='--',color='red')
-
-#plt.xlim(-1,1)
-plt.legend()
-plt.savefig('hoodah')
-plt.show()
-
 def varelax(num_lays):
-    'function to process Hood bfields'
-    rl=np.linspace(0,1,num_lays+1)
+    'function to relax Hood bfields'
+    rl=np.linspace(0,1.01,num_lays+1)
     rl=rl[1:]
     # print(rl,'rl')
     y=aprofile(rl,2)
     # print(y,'y')
     #y_tmp = copy(y)
     #y=np.where(y>0,y-0.5,y)
-    # 'removing 0 values from array y and coresp. rl values'
-    # mask0 = y != 0
-    # rm=rl[mask0]
-    # y=y[mask0]
+    'removing 0 values from array y and coresp. rl values'
+    mask0 = y != 0
+    rm=rl[mask0]
+    y=y[mask0]
     # print('rm',len(rm))
     # print('y',y)
     # plt.bar(rm,y,width=rl[1]-rl[0],edgecolor='red',align='edge')#,alpha=0.5)
@@ -307,128 +282,148 @@ def varelax(num_lays):
     # plt.xlabel('r')
     # plt.ylabel('a')
     # plt.xlim(rm[0],rm[-1]+(rm[1]-rm[0]))
-    # plt.savefig('hoodalprofile')
+    # #plt.savefig('hoodalprofile')
     # plt.show()
     # if len(y) == 0: return 0
-    # else: return get_dw_n(y,rm)
-    return get_dw_n(y,rm)
+    # else: return getdwn(y,rm)
+    return getdwn(y,rm)
+#print(varelax(10))
+def repeat_varelax(nl):
+	'function to calculate varelax for different # of layers'
+    'nl=number of layers, tl= array of layer number'
+    nl=20
+    tl=np.linspace(1,nl,nl).astype(np.int32)
+    #print(tl,'tl')
+    #print(len(tl),'tl')
+    dwrange=np.zeros(len(tl))
+    for i in range(1,len(tl)):
+        dwrange[i]=varelax(tl[i])
+    dwrange=np.roll(dwrange,-1)
+    dwrange[-1]=varelax(len(tl))
+    #mask1=dwrange<0.5
+    #dwrange=dwrange[mask1]
+    #tl=tl[mask1]
+    plt.plot(tl,dwrange)
+    plt.scatter(tl,dwrange,color='red')
+    #plt.ylim(0,dwrange[3])
+    plt.xlabel('Layers')
+    plt.ylabel('$\delta W$')
+    plt.xticks(tl)
+    plt.savefig('hooddwrelax')
+    #plt.xticks(np.linspace(0,nl,nl/4+1))
+    plt.show()
+    'code to generate subplot in higher resoltion'
+    # fig, ax = plt.subplots(nrows=1, figsize=(7,7))
+    # ax1 = fig.add_axes([0.5,0.15,0.4,0.3]) #co-ordinates from the left corner, in figure relative units [x,y,dx,dy]
+    # ax.plot(tl,dwrange)
+    # ax.scatter(tl,dwrange,color='red')
+    # #plt.ylim(0,2)
+    # ax.set_xlabel('Layer')
+    # ax.set_ylabel('K')
+    # ax.set_xticks(tl)
+    # #plt.title('Repeated {} layer relaxation model with a0={}'.format(nlays-1 ,a0))
+    # #plt.xlim(0,13)
+    # tl1=[3,6,9,12,15,18]
+    # ax1.set_xlim(3,20)
+    # ax1.set_xticks(tl1)
+    # ax1.set_ylim(dwrange[3]-0.01,dwrange[-1]+0.01)
+    # ax1.axhline(0,color='green',linestyle='--')
+    # ax1.plot(tl,dwrange)
+    # ax1.scatter(tl,dwrange,color='red')
+    # ax1.set_xlabel('Layer')
+    # ax1.set_ylabel('K')
+    #plt.savefig('hooddwvsnl')
+    plt.show()   
 
-#print(varelax(11))
-#print(varelax(9))
+#print(repeat_varelax(20)) 
 
-
-#function to generate linear alpha profile wrt r
 def lindw(gamma,num_lays,a0):
-	#specifify number of alpha and r values
-	#need to cut r values into discrete equally spaced chunks between 0-1
-	#num-lays=num_alpha
-	#ignor r[0] as it's 0
     'function to create linear a vs r profile for n layers'
     alin=np.zeros(num_lays)
     alin[0]=a0
     rlin=np.linspace(0,0.98,num_lays+1)
     'removing 0 from rlin'
     rlin=rlin[1:]
-    for i in np.arange(1,num_lays,1):
+    for i in np.arange(0,num_lays,1):
         alin[i]=alin[0]+(0.5*gamma*rlin[i-1])
 
-    # print('rlin',rlin)
-    # print('alin',alin)
-    plt.bar(rlin,alin,align='edge' ,edgecolor='red')#,alpha=0.5)
-    plt.xlim(rlin[0],rlin[-1])
-    rshift=0.5*(rlin[1]-rlin[0])
-    rshift=rshift+rlin
-    ashift=0.5*(alin[1]-alin[0])
-    ashift=alin-ashift
-    plt.scatter(rshift,alin)
+    print('rlin',rlin)
+    print('alin',alin)
+    # plt.bar(rlin,alin,align='edge' ,edgecolor='red')#,alpha=0.5)
+    # plt.xlim(rlin[0],rlin[-1])
+    # rshift=0.5*(rlin[1]-rlin[0])
+    # rshift=rshift+rlin
+    # ashift=0.5*(alin[1]-alin[0])
+    # ashift=alin-ashift
+    # plt.scatter(rshift,alin)
     #print(ashift,'ashift')
     #print('rshift',rshift)
-    plt.plot(rlin,ashift,color='black')#,alpha=0.5)
-    plt.xlabel('r')
-    plt.ylabel('a')
+    # plt.plot(rlin,ashift,color='black')#,alpha=0.5)
+    # plt.xlabel('r')
+    # plt.ylabel('a')
     #plt.title('Linear cylindrical model alpha vs r')
+    # plt.show()
+    return getdwn(alin,rlin)
+
+#print(lindw(15,10,0.5))
+
+def lindwrep(nl):
+	'function to relax lindw for different number of layers'
+    'nl=number of layers, tl= array of layer number'
+    nl=20
+    tl=np.linspace(1,nl,nl).astype(np.int32)
+    #print(tl,'tl')
+    #print(len(tl),'tl')
+    dwrange=np.zeros(len(tl))
+    for i in range(1,len(tl)):
+        dwrange[i]=lindw(2,tl[i],1)
+    #mask1=dwrange<0.5
+    #dwrange=dwrange[mask1]
+    #tl=tl[mask1]
+    dwrange=np.roll(dwrange,-1)
+    dwrange[-1]=lindw(2,len(tl),1)
+    plt.plot(tl,dwrange)
+    plt.scatter(tl,dwrange,color='red')
+    #plt.ylim(0,dwrange[3])
+    plt.xlabel('Layer')
+    plt.ylabel('$\delta W$')
+    plt.xticks(tl)
+    plt.savefig('lineardwvslay')
+    #plt.xticks(np.linspace(0,nl,nl))
     plt.show()
-    return get_dw_n(alin,rlin)
-#print(lindw(5,11,1))
-#print('a',a)
-'ng is the number of gradient variations, a0 is starting point for layer 1'
-# ng = 9
-# nlays=5
-# a0=0.1
-# ng=np.arange(1,ng,0.4)
-# dwrange=np.zeros(len(ng))
-# for i in range(0,len(ng)):
-#     dwrange[i]=lindw(ng[i],nlays,a0)
-# plt.plot(ng,dwrange)
-# plt.scatter(ng,dwrange,color='red')
-# #plt.ylim(0,2)
-# plt.xlabel('gamma')
-# plt.ylabel('dw')
-# #plt.title('Repeated {} layer relaxation model with a0={}'.format(nlays-1 ,a0))
-# #plt.xlim(0,13)
-# #plt.savefig('gammavsdwsq')
-# plt.show()
-# ng = 3
-# nlays=11from matplotlib.ticker import StrMethodFormatter
-# a0=1
+print(lindwrep(20))
 
-'code to calculate multiple relaxation of varelax'
-# nl=20
-# tl=np.linspace(1,nl,nl).astype(np.int32)
-# #print(tl,'tl')
-# #print(len(tl),'tl')
-# dwrange=np.zeros(len(tl))
-# for i in range(1,len(tl)):
-#     dwrange[i]=varelax(tl[i])
-# mask1=dwrange<0.5
-# dwrange=dwrange[mask1]
-# tl=tl[mask1]
-# plt.plot(tl,dwrange)
-# plt.scatter(tl,dwrange,color='red')
-# #plt.ylim(0,dwrange[3])
-# plt.xlabel('layers')
-# plt.ylabel('K')
-# #plt.savefig('hoodkrelax')
-# plt.xticks(tl)
-# #plt.xticks(np.linspace(0,nl,nl/4+1))
-# plt.show()
-# print(dwrange)
-'code to generate subplot in higher resoltion'
-# fig, ax = plt.subplots(nrows=1, figsize=(7,7))
-# ax1 = fig.add_axes([0.45,0.5,0.4,0.3])
-# ax.plot(tl,dwrange)
-# ax.scatter(tl,dwrange,color='red')
-# #plt.ylim(0,2)
-# ax.set_xlabel('Layers')
-# ax.set_ylabel('W')
-# ax.set_xticks(tl)
-# #plt.title('Repeated {} layer relaxation model with a0={}'.format(nlays-1 ,a0))
-# #plt.xlim(0,13)
+def lindwgradvar(ng,nlays,a0):
+	'function to relax lindw with varying gradient'
+    'ng=# of gradient variations, nlays= ~ lays for each relax, a0=starting point'
+    ng=np.linspace(1,ng,15)
+    print(ng,'ng')
+    dwrange=np.zeros(len(ng))
+    for i in range(0,len(ng)):
+        dwrange[i]=lindw(ng[i],nlays,a0)
+    plt.plot(ng**2,dwrange)
+    print(dwrange,'dwrange')
+    plt.scatter(ng**2,dwrange,color='red')
+    #plt.ylim(0,2)
+    plt.xlabel('$\gamma^{2}$')
+    plt.ylabel('$\delta W$')
 
-# ax1.set_xlim(3,tl[-1])
-# #ax1.set_xticks(tl[2:])
-# ax1.set_ylim(1.7*min(dwrange),1.2*max(dwrange[4:]))
-# ax1.axhline(0,color='green',linestyle='--')
-# ax1.plot(tl,dwrange)
-# ax1.scatter(tl,dwrange,color='red')
-# ax1.set_xlabel('Layers')
-# ax1.set_ylabel('W')
-# plt.savefig('wvsnumlayer')
-# plt.show()    
+    plt.gca().yaxis.set_major_formatter(StrMethodFormatter('{x:,.4f}')) # 2 decimal places    #plt.title('Repeated {} layer relaxation model with a0={}'.format(nlays-1 ,a0))
+    #plt.xlim(0,13)
+    plt.savefig('gammavsdwsq')
+    plt.show()
+#print(lindwgradvar(1.8,10,1))
 
-# a2=np.arange(-8,8,0.3)
-
+'simple code to calculate dw while keeping other alpha values fixed as a check'
+# a2=np.linspace(-8,8,99)
 # a2w=np.zeros(len(a2))
 # for i in range(0,len(a2)):
-#     a2w[i]=get_dw_n([a2[i],-1,-1,-1],r)
-
+#     a2w[i]=getdwn([a2[i],a2[i],1,1],r1)
 #  #print(a2w)
 # plt.plot(a2,a2w)
-# #plt.ylim(0,1)
+# plt.ylim(0,2)
 # plt.title('2 layer dw vs a1 when a2=1')
 # plt.xlabel('a1')
 # plt.ylabel('dw')
 # #plt.savefig('2laya2=1a1r')
 # plt.show()
-
-

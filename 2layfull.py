@@ -1,6 +1,4 @@
-'working program using for loops on a 2 layer model'
-'Fixing this code was more difficult than expected'
-'I missed an a2r2 value in c2prod, PRINTING IS YOUR FRIEND'
+'working program using two-layer model, can calculate K, W and dW'
 import numpy as np
 import scipy
 import matplotlib.pyplot as plt
@@ -135,40 +133,36 @@ def deltaw(alpha1,alpha2):
       #print('initial larger w',w1+w2)
       return w1+w2                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             
     dw=w(alpha1,alpha2)-ws(rootal)
-    # print('a1=',alpha1,'a2=',alpha2)
-    # print('rootal=',rootal)
-    #print(ws(rootal),'final energy')
+    print('a1=',alpha1,'a2=',alpha2)
+    print('rootal=',rootal)
+    print(ws(rootal),'final energy')
     
     #np.arange didn't allow larger to smaller range
-    # plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
-    # plt.axhline(color='r',linestyle=':')
-    # plt.title("2 layer model, a1= {}, a2={}, dw={}, roota={}".format(alpha1 ,alpha2, dw, rootal))
-    # #plt.xlim([alpha1,alpha2])
-    # plt.ylim([-0.5,3])
-    # plt.ylabel('k(a)-k(a1,a2)')
-    # plt.xlabel('a')
-    #plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
+    plt.plot(np.linspace(-9,10,99999),ksr(np.linspace(-9,10,99999)))
+    plt.axhline(color='r',linestyle=':')
+    plt.title("2 layer model, a1= {}, a2={}, dw={}, roota={}".format(alpha1 ,alpha2, dw, rootal))
+    #plt.xlim([alpha1,alpha2])
+    plt.ylim([-0.5,3])
+    plt.ylabel('k(a)-k(a1,a2)')
+    plt.xlabel('a')
+    plt.savefig('2krootfinda1={}a2={}'.format(alpha1 ,alpha2))
     plt.show()
     
     return dw
-print(deltaw(-2,1))
-a2=np.arange(-8,8,0.3)
-print(a2,'a2')
-a2w=np.zeros(len(a2))
-for i in range(0,len(a2)):
-    a2w[i]=deltaw(a2[i],1)
+print(deltaw(2,-1))
+'code to keep a1 constant and vary a2 (vice-versa), another check'
+# a2=np.arange(-8,8,0.3)
+# print(a2,'a2')
+# a2w=np.zeros(len(a2))
+# for i in range(0,len(a2)):
+#     a2w[i]=deltaw(a2[i],1)
 
- #print(a2w)
-plt.plot(a2,a2w)
-plt.ylim(0,1)
-plt.title('2 layer dw vs a1 when a2=1')
-plt.xlabel('a1')
-plt.ylabel('dw')
-#plt.savefig('2laya2=1a1r')
-plt.show()
-'for k_single check'
-plt.plot(a1,helicity(a1,a1))
-plt.xlabel('a1r1')
-plt.ylabel('K')
-plt.savefa2r2('Ktest.png') 
-plt.show()
+#  #print(a2w)
+# plt.plot(a2,a2w)
+# plt.ylim(0,1)
+# plt.title('2 layer dw vs a1 when a2=1')
+# plt.xlabel('a1')
+# plt.ylabel('dw')
+# #plt.savefig('2laya2=1a1r')
+# plt.show()
+# 'for k_single check'

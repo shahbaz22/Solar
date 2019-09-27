@@ -1,1 +1,1 @@
-This is my first repository, I'm gonna upload the latest versions of my codes here. Check for my second push. Hello world from branch new_formula.
+Completed repository for multi-layer model; includes code for 2-layer and 3-layer code for comparison and varification of multi-layer code.

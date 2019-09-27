@@ -1,4 +1,4 @@
-'working program using for N layer model over arange of r'
+'working program to calculate the transfer of helicity using multi-layer code'
 import numpy as np
 import scipy
 from scipy.optimize import fsolve
@@ -12,19 +12,8 @@ from scipy import special
 scsp=scipy.special
 pi=np.pi
 
-'Array of helicity "a" used as inputs'
-al=[1,2,3,-2]
-rl=np.linspace(0,1,len(al)+1)
-'removing 0 from rlin'
-rl=rl[1:]
-# r=[]
-# 'for loop to generate array of r values coresp. to n alpha values'
-# for i in np.linspace(len(a),1,len(a)):
-#   ra=1/i
-#   r.append(ra)
+'Array of "a", "r" used as inputs'
 
-print('here is a',al)
-print('here is r',rl)
 
 def get_dk_n(a,r):
     'function to get n values of helicty for n layers'
@@ -195,25 +184,97 @@ def get_dk_n(a,r):
       return ks1-kt
     rootal=scipy.optimize.brentq(ksr, -3.83, 3.83)
     
-    rshift=0.5*(r[1]-r[0])
-    rshift=-rshift+r
+    # rshift=0.5*(r[1]-r[0])
+    # rshift=-rshift+r
 
-    plt.scatter(rshift,k-ksr(rootal))
-    plt.plot(rshift,k-ksr(rootal))
-    plt.title("{0} layer model, a={1}, dk={2:09.4f}, roota={3:.4f}".format(len(a),a, kt-ksr(rootal), rootal))
+    # plt.scatter(rshift,k-ksr(rootal))
+    # plt.plot(rshift,k-ksr(rootal))
+    # plt.title("{0} layer model, a={1}, dk={2:09.4f}, roota={3:.4f}".format(len(a),a, kt-ksr(rootal), rootal))
 
-    plt.vlines(r,min(k),max(k),linestyle='--',color='red')
-    plt.vlines(0,min(k),max(k),linestyle='--',color='red')
-    plt.hlines(0,0,1,linestyle='--')
-    plt.xlabel('r')
-    plt.ylabel('k(a,r)-k(roota)')
-    plt.show()
-    print('k',k)
-    print('ksr',ksr(rootal))
-    print(rootal,'rootal')
+    # plt.vlines(r,min(k),max(k),linestyle='--',color='red')
+    # plt.vlines(0,min(k),max(k),linestyle='--',color='red')
+    # plt.hlines(0,0,1,linestyle='--')
+    # plt.xlabel('r')
+    # plt.ylabel('k(a,r)-k(roota)')
+    # plt.show()
+    #print('k',k)
+    # print('ksr',ksr(rootal))
+    #print(rootal,'rootal')
+    'helicity returned with root a value append (last element) for later use'
+    return np.append(k,rootal)
 
-    return k-ksr(rootal)    
 
- 
+def lindw(gamma,num_lays,a0):
+    'function to create linear a vs r profile for n layers'
+    'linear alpha function for intial values'
+    alin=np.zeros(num_lays)
+    alin[0]=a0
+    rlin=np.linspace(0,1,num_lays+1)
+    'removing 0 from rlin'
+    rlin=rlin[1:]
+    for i in np.arange(1,num_lays,1):
+        alin[i]=alin[0]+(0.5*gamma*rlin[i-1])
 
-get_dk_n(al,rl)
+    #print('rlin',rlin)
+    #print('alin',alin)
+    'ploting script'
+    # plt.bar(rlin,alin,align='edge' ,edgecolor='red')#,alpha=0.5)
+    # plt.xlim(rlin[0],rlin[-1])
+    # rshift=0.5*(rlin[1]-rlin[0])
+    # rshift=rshift+rlin
+    # ashift=0.5*(alin[1]-alin[0])
+    # ashift=alin-ashift
+    # plt.scatter(rshift,alin)
+    # #print(ashift,'ashift')
+    # #print('rshift',rshift)
+    # plt.plot(rlin,ashift,color='black')#,alpha=0.5)
+    # plt.xlabel('r')
+    # plt.ylabel('a')
+    # plt.title('Linear cylindrical model alpha vs r')
+    # plt.show()
+    return alin
+
+'Code to subtract average relaxed alpha from linear alpha profile to obtain helicity tranfer'    
+nl,g=10,2.5
+
+'al is alpha array with dim=# of layers , g is the gradent (steepness of alpha), nl is the # of layers'
+al=lindw(g,nl,1)
+print('al',al)
+'defining rl'
+rl=np.linspace(0,1,len(al)+1)
+'removing 0 from rlin'
+rl=rl[1:]
+k1=get_dk_n(al,rl)
+print('k1',k1)
+'last value for k1 is roota'
+roota=k1[-1]
+print('roota',roota)
+'array of roota of dimension of the initial alpha array'
+arootar=np.full_like(al,roota,dtype=float) #array full of roota with dim of al
+print('arootar',arootar)
+k2=get_dk_n(arootar,rl)
+print(k2)
+'removing root alpha (the last element) from k1'
+k1=k1[0:len(al)]
+k2=k2[0:len(al)]
+print('k1',k1)
+print('k2',k2)
+'s checks whether dk=0, as it should'
+s=np.sum(k1-k2)
+print('s',s)
+rshift=0.5*(rl[1]-rl[0])
+rshift=-rshift+rl
+'k1-k2 gives the change in helicty in each layer'
+'k(alpha)-k(alpha root) for each layer'
+plt.scatter(rshift,k1-k2)
+plt.plot(rshift,k1-k2)
+#plt.title("{0} layer model, a={1}, dk={2:09.4f}, roota={3:.4f}".format(len(a),a, kt-ksr(rootal), rootal))
+#plt.savefig('gamma{}nl{}ktran'.format(g,nl))
+plt.vlines(rl,min(k1-k2),max(k1-k2),linestyle='--',color='red')
+plt.ylim(min(k1-k2),max(k1-k2))
+plt.vlines(0,min(k1-k2),max(k1-k2),linestyle='--',color='red')
+plt.hlines(0,0,1,linestyle='--',color='green')
+plt.xlabel('r')
+plt.ylabel('$\delta K$')
+plt.show()
+    
